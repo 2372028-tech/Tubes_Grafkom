@@ -2,24 +2,26 @@
 let level = 1;
 let lives = 3;
 const maxLevel = 5;
-const showTime = 4000; // waktu mengingat
+const showTime = 4000;
 let sequence = [];
 let playTimer = null;
+
 const colors = ["#f44336", "#2196f3", "#ffeb3b", "#4caf50", "#9c27b0"];
 const shapes = ["circle", "square", "triangle"];
 
-// ====== ELEMEN DOM ======
+// ====== AMBIL ELEMEN DARI HTML ======
 const info = document.getElementById("info");
 const gameArea = document.getElementById("gameArea");
 const slots = document.getElementById("slots");
 const livesDisplay = document.getElementById("lives");
 const startBtn = document.getElementById("startBtn");
 
-// ====== INISIALISASI GAME ======
 updateLives();
+
 startBtn.addEventListener("click", startLevel);
 
-// ====== FUNGSI UTAMA ======
+
+// ====== FUNGSI UTAMA: MULAI LEVEL ======
 function startLevel() {
   startBtn.style.display = "none";
   info.textContent = `Level ${level}: Ingat urutan bentuk dan warnanya!`;
@@ -36,6 +38,8 @@ function startLevel() {
   }, showTime);
 }
 
+
+// ====== BUAT URUTAN BENTUK ACAK ======
 function generateSequence(jumlah) {
   for (let i = 0; i < jumlah; i++) {
     let bentuk = shapes[Math.floor(Math.random() * shapes.length)];
@@ -44,6 +48,8 @@ function generateSequence(jumlah) {
   }
 }
 
+
+// ====== TAMPILKAN URUTAN BENTUK UNTUK DIINGAT ======
 function tampilkanSequence() {
   for (let i = 0; i < sequence.length; i++) {
     let s = buatBentuk(sequence[i], i);
@@ -51,6 +57,8 @@ function tampilkanSequence() {
   }
 }
 
+
+// ====== FASE MENYUSUN (DRAG & DROP) ======
 function startPlayPhase() {
   gameArea.innerHTML = "";
   slots.innerHTML = "";
@@ -59,12 +67,14 @@ function startPlayPhase() {
     let kotak = document.createElement("div");
     kotak.className = "slot";
     kotak.dataset.index = i;
+
     kotak.addEventListener("dragover", e => e.preventDefault());
     kotak.addEventListener("drop", dragDrop);
     slots.appendChild(kotak);
   }
 
   let acak = acakArray(sequence.slice());
+
   for (let i = 0; i < acak.length; i++) {
     let s = buatBentuk(acak[i], i);
     s.draggable = true;
@@ -75,6 +85,8 @@ function startPlayPhase() {
   playTimer = setTimeout(() => kalah("Waktu habis!"), 60000);
 }
 
+
+// ====== BUAT ELEMEN BENTUK (DIV) ======
 function buatBentuk(data, id) {
   let el = document.createElement("div");
   el.id = "shape-" + id;
@@ -91,6 +103,8 @@ function buatBentuk(data, id) {
   return el;
 }
 
+
+// ====== SAAT BENTUK DI-DRAG KE SLOT ======
 function dragDrop(e) {
   e.preventDefault();
   const id = e.dataTransfer.getData("id");
@@ -103,6 +117,8 @@ function dragDrop(e) {
   }
 }
 
+
+// ====== CEK APAKAH SEMUA SLOT SUDAH TERISI ======
 function cekSelesai() {
   let filled = slots.querySelectorAll(".shape");
   if (filled.length === sequence.length) {
@@ -111,6 +127,8 @@ function cekSelesai() {
   }
 }
 
+
+// ====== CEK APAKAH SUSUNAN PEMAIN BENAR ======
 function cekHasil() {
   let benar = true;
   let slotEl = slots.children;
@@ -125,26 +143,30 @@ function cekHasil() {
   }
 
   if (benar) menang();
-  else animasiBubbleSort(sequence.map(s => s.color.slice()));
+  else animasiBubbleSort();
 }
 
+
+// ====== SAAT PEMAIN BENAR (MENANG) ======
 function menang() {
   level++;
   if (level > maxLevel) {
-    info.textContent = "🎉 Kamu sudah menamatkan semua level!";
+    info.textContent = "Kamu sudah menamatkan semua level!";
     resetGame("Main Lagi?");
   } else {
-    info.textContent = `✅ Level ${level - 1} selesai! Lanjut level ${level}...`;
+    info.textContent = `Level ${level - 1} selesai! Lanjut level ${level}...`;
     setTimeout(startLevel, 2000);
   }
 }
 
+
+// ====== SAAT PEMAIN KALAH ======
 function kalah(pesan) {
   lives--;
   updateLives();
 
   if (lives <= 0) {
-    info.textContent = `💀 Game Over! ${pesan}`;
+    info.textContent = `Game Over! ${pesan}`;
     resetGame("Coba Lagi?");
   } else {
     info.textContent = `${pesan} Nyawa tersisa: ${lives}`;
@@ -152,6 +174,8 @@ function kalah(pesan) {
   }
 }
 
+
+// ====== RESET GAME KE LEVEL 1 ======
 function resetGame(teks) {
   level = 1;
   lives = 3;
@@ -160,14 +184,14 @@ function resetGame(teks) {
   updateLives();
 }
 
-// ====== VISUALISASI BUBBLE SORT (Perbaiki otomatis dengan animasi swap) ======
+
+// ====== VISUALISASI BUBBLE SORT (Menukar bentuk otomatis) ======
 function animasiBubbleSort() {
   info.textContent = "❌ Urutan salah! Komputer memperbaiki urutan...";
 
-  // ambil elemen saat ini di slot (yang diisi pemain)
   const currentEls = Array.from(slots.children).map(s => s.children[0]);
+
   if (currentEls.length === 0) {
-    // tidak ada isi, langsung perbaiki
     slots.innerHTML = "";
     sequence.forEach((item, i) => {
       const s = buatBentuk(item, i);
@@ -177,30 +201,25 @@ function animasiBubbleSort() {
     return;
   }
 
-  // buat key untuk perbandingan: "shape|color"
   const targetOrder = sequence.map(s => s.shape + "|" + s.color);
 
-  // keys dari posisi sekarang
   const keys = currentEls.map(el => (el ? el.dataset.shape + "|" + el.dataset.color : null));
 
-  // simulasikan bubble sort pada keys untuk mencatat daftar swap yang perlu dilakukan
   const swaps = [];
   const arr = keys.slice();
+
   for (let i = 0; i < arr.length; i++) {
     for (let j = 0; j < arr.length - i - 1; j++) {
-      // bandingkan posisi target (index di targetOrder)
       const ia = targetOrder.indexOf(arr[j]);
       const ib = targetOrder.indexOf(arr[j + 1]);
       if (ia > ib) {
-        swaps.push([j, j + 1]); // catat bahwa kita harus swap index j dan j+1
+        swaps.push([j, j + 1]);
         const tmp = arr[j]; arr[j] = arr[j + 1]; arr[j + 1] = tmp;
       }
     }
   }
 
-  // jika tidak ada swap (aneh tapi aman), langsung tampilkan urutan benar
   if (swaps.length === 0) {
-    // langsung perbaiki tampilan
     slots.innerHTML = "";
     sequence.forEach((item, i) => {
       const s = buatBentuk(item, i);
@@ -212,12 +231,9 @@ function animasiBubbleSort() {
     return;
   }
 
-  // animasikan swaps satu-per-satu
   let step = 0;
   function nextSwap() {
     if (step >= swaps.length) {
-      // selesai semua swap: tampilkan urutan akhir (seharusnya sudah benar)
-      // (opsional: pastikan urutan final sama dengan sequence)
       slots.innerHTML = "";
       sequence.forEach((item, i) => {
         const s = buatBentuk(item, i);
@@ -230,7 +246,6 @@ function animasiBubbleSort() {
     }
 
     const [a, b] = swaps[step];
-    // ambil slot DOM terkini (indikasi posisi index)
     const slotEls = Array.from(slots.children);
     const slotA = slotEls[a];
     const slotB = slotEls[b];
@@ -242,31 +257,26 @@ function animasiBubbleSort() {
       return setTimeout(nextSwap, 100);
     }
 
-    // efek visual sederhana: gerakkan sementara kiri/kanan lalu swap di DOM
     elA.style.transition = "transform 500ms";
     elB.style.transition = "transform 500ms";
     elA.style.transform = "translateX(18px)";
     elB.style.transform = "translateX(-18px)";
 
     setTimeout(() => {
-      // swap node secara DOM: pindahkan elemen antar slot
       slotA.appendChild(elB);
       slotB.appendChild(elA);
-      // reset transform
       elA.style.transform = "none";
       elB.style.transform = "none";
-      // lanjut ke swap berikutnya setelah sebentar
       step++;
       setTimeout(nextSwap, 120);
     }, 700);
   }
 
-  // mulai animasi
   nextSwap();
 }
 
 
-// ====== HELPER ======
+// ====== FUNGSI BANTUAN ======
 function acakArray(arr) {
   for (let i = arr.length - 1; i > 0; i--) {
     let j = Math.floor(Math.random() * (i + 1));
@@ -277,6 +287,7 @@ function acakArray(arr) {
   return arr;
 }
 
+// Nyawa pemain
 function updateLives() {
   livesDisplay.textContent = "Nyawa: " + "❤️".repeat(lives);
 }
