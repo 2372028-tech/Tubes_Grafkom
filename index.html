@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Memory Sort Game</title>
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(135deg, #141e30, #243b55);
+      color: #fff;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 {
+      margin: 30px 0 10px;
+      font-size: 2rem;
+    }
+
+    #info {
+      margin: 10px 0;
+      font-size: 1.1rem;
+      opacity: 0.9;
+    }
+
+    #lives {
+      margin-bottom: 20px;
+      font-size: 1.2rem;
+    }
+
+    #gameArea, #slots {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+      min-height: 100px;
+    }
+
+    .shape {
+      width: 80px;
+      height: 80px;
+      cursor: grab;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .shape:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+    }
+
+    .circle {
+      border-radius: 50%;
+    }
+
+    .triangle {
+      width: 0;
+      height: 0;
+      border-left: 40px solid transparent;
+      border-right: 40px solid transparent;
+      border-bottom: 80px solid;
+      background: none;
+      cursor: grab;
+    }
+
+    .slot {
+      width: 80px;
+      height: 80px;
+      border: 2px dashed rgba(255, 255, 255, 0.6);
+      border-radius: 10px;
+      transition: background-color 0.3s;
+    }
+
+    .slot:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    button {
+      background: #ff4081;
+      border: none;
+      color: white;
+      padding: 10px 25px;
+      font-size: 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      margin: 30px 0;
+      transition: background 0.2s ease;
+    }
+
+    button:hover {
+      background: #ff5c9a;
+    }
+  </style>
+</head>
+<body>
+  <h1>🧠 Memory Sort Game</h1>
+  <div id="info"></div>
+  <div id="lives"></div>
+  <div id="gameArea"></div>
+  <div id="slots"></div>
+  <button id="startBtn">Mulai Game</button>
+
+  <script src="script.js"></script>
+</body>
+</html>
